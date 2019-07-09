@@ -106,26 +106,25 @@
         <div class="todo-list-item-second">想吃一条鱼</div>
         <div class="todo-list-item-third">X</div>
       </div>
-      <!-- <div class="todo-list-item">
+      <div class="todo-list-item">
         <div class="todo-list-item-first"></div>
         <div class="todo-list-item-second">做了一条鱼</div>
         <div class="todo-list-item-third">X</div>
-      </div> -->
+      </div>
     </div>
     <div class="todos-filter" id="todos-filter">
-      <span class="filter-item active">全部</span>
-      <span class="filter-item">待办</span>
-      <span class="filter-item">已办</span>
+      <span class="filter-item active"></span>
+
     </div>
   </div>
   <script type="text/javascript">
     const PAGE = {
       data:{
         todos: [{
-          title: '打一瓶酱油',
+          title: '想吃一条鱼',
           completed: false
         },{
-          title: '跑步800米',
+          title: '吃了一条鱼',
           completed: true
         }],
         filter: 1,
@@ -136,8 +135,8 @@
         }
       },
       init: function(){
-        // this.render();
         this.bind();
+        this.render(); 
       },
       bind: function(){
         let Input = $('#input');
@@ -145,29 +144,76 @@
         $('#input').on('keydown',this.addtodo);
         $('#todolist').on('click','.todo-list-item-first',this.changetodo);
         $('#todolist').on('click','.todo-list-item-third',this.deleteTodo);
+        $('#todos-filter').on('click','.filter-item',this.filtertodo);
+        $(this.window).on('unload',this.saveTodo);
       },   
-      // render:function(){
-      // },
+      render:function(){
+        PAGE.data.todos.forEach((data,index)=>data.index = index);
+        let choose;
+        switch(PAGE.data.filter){
+          case 2:
+          choose = PAGE.data.todos.filter( data => !data.completed);
+          break;
+          case 3:
+          choose = PAGE.data.todos.filter( data => data.completed);
+          break;
+          default:
+          choose = PAGE.data.todos;
+          break
+        }
+        let todosElement = choose.map((data) =>{
+          return` 
+          <div class="todo-list-item ${data.completed ? 'active' : ''}" data-index="${data.index}">
+            <div class="todo-list-item-first"></div>
+            <div class="todo-list-item-second">${data.title}</div>
+            <div class="todo-list-item-third">x</div>
+          </div>`
+        });
+
+        let filterElement = Object.keys(PAGE.data.filters).map( key =>{
+          return`<span class="filter-item ${PAGE.data.filter == key ? 'active' : ''}" data-id="${key}">${(PAGE.data.filters)[key]}</span>`
+        });
+        $('#todolist').html(todosElement);
+        $('#todos-filter').html(filterElement);
+      },
+      getTodo: function(){
+        let todos = localStorage.getItem('todos');
+        todos = JSON.parse(todos) || [];
+        PAGE.data.todos = todos;
+        PAGE.render();
+      },
+      saveTodo: function(){
+        let todos = PAGE.data.todos;
+        let todosStr = JSON.stringify(todos);
+        localStorage.setItem('todos',todosStr);
+      },
       addtodo:function(e){
         let value = this.value.trim();
         let key = e.which;
         if ( key !== 13 || !value) {
           return;
         }
-        $('#todolist').append(`
-        <div class="todo-list-item">
-          <div class="todo-list-item-first"></div>
-          <div class="todo-list-item-second">${this.value}</div>
-          <div class="todo-list-item-third">X</div>
-        </div>`)
+        PAGE.data.todos.push({
+          title: value,
+          completed: false
+        })
+        PAGE.render();  
       },
-      // switch:function(){
-      // },
       changetodo:function(){
-        $(this).parent().toggleClass('active');
-         },
+        let clickft = $(this).parent().data('index');
+        console.log(PAGE.data.todos);
+        PAGE.data.todos[clickft].completed = !PAGE.data.todos[clickft].completed
+        PAGE.render();
+      },
       deleteTodo:function(){
-        $(this).parent().remove()
+        let clicktd = $(this).parent().data('index');
+        PAGE.data.todos.splice(clicktd,1);
+        
+        PAGE.render();
+      },
+      filtertodo: function(){
+        PAGE.data.filter =Number($(this).data('id'));
+        PAGE.render();
       },
     }
     PAGE.init()
