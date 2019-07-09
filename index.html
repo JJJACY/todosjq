@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>todos jq</title>
+  <meta charset="utf-8">
+  <script type="text/javascript" src="./js/jquery-3.4.1.min.js"></script>
+  <style type="text/css">
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .container{
+      width: 400px;
+      margin: 0 auto;
+      margin-top: 200px;
+      text-align: center;
+    }
+    .todo-title{
+      font-size: 80px;
+      font-weight: 100;
+      font-family: fantasy;
+      color: #FF8C00;
+    }
+    .input-box{
+      width: 400px;
+      height: 50px;
+      padding: 10px 10px 10px 40px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #8B0000;
+    }
+    .todo-list-item{
+      display: flex;
+      width: 400px;
+      height: 50px;
+      padding: 10px;
+      line-height: 30px;
+      font-size: 20px;
+      font-weight: 500;
+      font-family: sans-serif;
+      border: 2px solid #CDB38B;
+    }
+    .todo-list-item.active .todo-list-item-first:before{
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: red;
+    }
+    .todo-list-item-first{
+      position: relative;
+      top: 5px;
+      margin-right: 16px;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #6E7B8B;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .todo-list-item.active .todo-list-item-second{
+      text-decoration: line-through;
+      color: #999; 
+    }
+    .todo-list-item-second{
+      flex: 1 ;
+      text-align: left;
+      line-height: 26px;
+    }
+    .todo-list-item-third{
+      cursor: pointer;
+    }
+    .todos-filter{
+      border-top: 1px solid #e4e4e4;
+      padding: 8px 16px;
+      text-align: center;
+    }
+    .todos-filter .filter-item{
+      display: inline-block;
+      margin: 0 10px;
+      padding: 4px 8px;
+      font-size: 14px;
+      color: #999;
+      border: 1px solid #999;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .todos-filter .filter-item.active{
+      border-color: #333;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="todo-title">todos</h1>
+    <div class="input-section">
+      <input class="input-box" id="input" placeholder="请输入待办事情"></input>
+    </div>
+    <div class="todo-list" id="todolist">
+      <div class="todo-list-item">
+        <div class="todo-list-item-first"></div>
+        <div class="todo-list-item-second">想吃一条鱼</div>
+        <div class="todo-list-item-third">X</div>
+      </div>
+      <!-- <div class="todo-list-item">
+        <div class="todo-list-item-first"></div>
+        <div class="todo-list-item-second">做了一条鱼</div>
+        <div class="todo-list-item-third">X</div>
+      </div> -->
+    </div>
+    <div class="todos-filter" id="todos-filter">
+      <span class="filter-item active">全部</span>
+      <span class="filter-item">待办</span>
+      <span class="filter-item">已办</span>
+    </div>
+  </div>
+  <script type="text/javascript">
+    const PAGE = {
+      data:{
+        todos: [{
+          title: '打一瓶酱油',
+          completed: false
+        },{
+          title: '跑步800米',
+          completed: true
+        }],
+        filter: 1,
+        filters: {
+          1: '全部',
+          2: '待办',
+          3: '已办',
+        }
+      },
+      init: function(){
+        // this.render();
+        this.bind();
+      },
+      bind: function(){
+        let Input = $('#input');
+        let Todolist = $('#todolist')
+        $('#input').on('keydown',this.addtodo);
+        $('#todolist').on('click','.todo-list-item-first',this.changetodo);
+        $('#todolist').on('click','.todo-list-item-third',this.deleteTodo);
+      },   
+      // render:function(){
+      // },
+      addtodo:function(e){
+        let value = this.value.trim();
+        let key = e.which;
+        if ( key !== 13 || !value) {
+          return;
+        }
+        $('#todolist').append(`
+        <div class="todo-list-item">
+          <div class="todo-list-item-first"></div>
+          <div class="todo-list-item-second">${this.value}</div>
+          <div class="todo-list-item-third">X</div>
+        </div>`)
+      },
+      // switch:function(){
+      // },
+      changetodo:function(){
+        $(this).parent().toggleClass('active');
+         },
+      deleteTodo:function(){
+        $(this).parent().remove()
+      },
+    }
+    PAGE.init()
+  </script>
+  
+</body>
+</html>
